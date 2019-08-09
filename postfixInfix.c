@@ -1,247 +1,133 @@
+// C program to convert infix expression to postfix
 #include <stdio.h>
-#include <stdlib.h>
-#include <ctype.h>
-//#include <mem.h>
-#include <math.h>
 #include <string.h>
+#include <stdlib.h>
 
-struct node
+// Stack type
+struct Stack
 {
-    int data;    //data in node
-    struct node* next;   //address tp next node
+    int top;
+    unsigned capacity;
+    int* array;
 };
-struct node* push(struct node* top,double data) // push an element onto the stack
+
+// Stack Operations
+struct Stack* createStack( unsigned capacity )
 {
-    struct node* temp = (struct node*)malloc(sizeof(struct node));
-    if(temp == NULL)
+    struct Stack* stack = (struct Stack*) malloc(sizeof(struct Stack));
+
+    if (!stack)
+        return NULL;
+
+    stack->top = -1;
+    stack->capacity = capacity;
+
+    stack->array = (int*) malloc(stack->capacity * sizeof(int));
+
+    if (!stack->array)
+        return NULL;
+    return stack;
+}
+int isEmpty(struct Stack* stack)
+{
+    return stack->top == -1 ;
+}
+char peek(struct Stack* stack)
+{
+    return stack->array[stack->top];
+}
+char pop(struct Stack* stack)
+{
+    if (!isEmpty(stack))
+        return stack->array[stack->top--] ;
+    return '$';
+}
+void push(struct Stack* stack, char op)
+{
+    stack->array[++stack->top] = op;
+}
+
+
+// A utility function to check if the given character is operand
+int isOperand(char ch)
+{
+    return (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z');
+}
+
+// A utility function to return precedence of a given operator
+// Higher returned value means higher precedence
+int Prec(char ch)
+{
+    switch (ch)
     {
-        exit(0);
-    }
-    temp->data = data;
-    temp->next = top;
-    top = temp;
-    return top;
-}
-struct node* pop(struct node *top,double *item) //pop element off the stack
-{
-    struct node* tmp = top;
-    *item = top->data;
-    top = top->next;
-    free(tmp);
-    return top;
-}
-void initialize(struct node* top)
-{
-    top = NULL;
-}
-int empty(struct node* top)  //checking if stack is empty or not. 1 if empty
-{
-    return top == NULL ? 1 : 0;
-
-}
-void printStack(struct node* top)
-{
-    struct node *current;
-    current = top;
-    if(current == NULL)
-    {
-        printf("Stack empty\n");
-
-    }
-    else
-    {
-        printf("\nItem on stack ");
-
-            while(current != NULL)
-        {
-            printf("%d ",current->data);
-            current = current->next;
-        }
-        printf("\n ----------------");
-    }
-
-
-}
-char stack[20];
-int top = -1;
-void push1(char x)
-{
-    stack[++top] = x;
-}
-char pop1()
-{
-    if(top == -1)
-        return -1;
-    else
-        return stack[top--];
-}
-
-int priority(char x)
-{
-    if(x == 40)
-        return 0;
-    if(x == 43 || x == 45)
+    case '+':
+    case '-':
         return 1;
-    if(x == 42 || x == 47)
+
+    case '*':
+    case '/':
         return 2;
-}
-char postFixCalculation(char infixConverted) {
-    struct node* top = NULL;
-    int size = 128;
-    char element[128];
-    double number1, number2, answer;
-    FILE *file = fopen("file.txt", "r");
-    char *ch = fgets(element, size, file);
-    ch = strtok (element," ");
-    initialize(top);
-    while (ch != NULL)
-    {
-        if(strchr("  ", ch[0]) ) {
-            printStack(top);
 
-        }
-        else if(priority(strchr("+-X/^", ch[0])) ){
-            switch(ch[0]){
-                case 43 :
-                    printf("%s  ", ch);
-                    top = pop(top, &number1);
-                    top = pop(top, &number2);
-                    answer = number1 + number2;
-                    top = push(top, answer);
-                    printStack(top);
-                    break;
-
-
-                case 45 :
-                    printf("%s  ", ch);
-                    top = pop(top, &number1);
-                    top = pop(top, &number2);
-                    answer = number1 - number2;
-                    top = push(top, answer);
-                    printStack(top);
-                    break;
-                case 88 :
-                    printf("%s ", ch);
-                    top = pop(top, &number1);
-                    top = pop(top, &number2);
-                    answer = number1 * number2;
-                    top = push(top, answer);
-                    printStack(top);
-                    break;
-                case 47 :
-                    printf("%s  ", ch);
-                    top = pop(top, &number1);
-                    top = pop(top, &number2);
-                    answer = number1 / number2;
-                    top = push(top, answer);
-                    printStack(top);
-                    break;
-                case 94 :
-                    printf("%s  ", ch);
-                    top = pop(top, &number1);
-                    top = pop(top, &number2);
-                    answer = pow(number2, number1);
-                    top = push(top, answer);
-                    printStack(top);
-                    break;
-
-            }
-        }
-        else if(ch[0] >= 48 && ch[0] <= 57){
-            double number = atof(ch);
-            top = push(top, number);
-            printStack(top);
-        }
-        ch = strtok(NULL, " ");
+    case '^':
+        return 3;
     }
-    char answer123 = top;
-    return answer123;
+    return -1;
 }
 
-char infixToPostfix()
+
+// The main function that converts given infix expression
+// to postfix expression.
+int infixToPostfix(char* exp)
 {
-    char element[128];
-    char exp[20];
-    char x, *eof;
-    FILE *file = fopen("file.txt", "r");
-    int size = 128;
-    char *ch = fgets(element, size, file);
-    ch = strtok (element," ");
-    eof = ch;
-    while(*eof != '\0')
-    {
-        if(*eof == 40)
-            push1(*eof);
-        else if(*eof == 41)
-        {
-            while((x = pop1()) != 40)
-                printf("%c ", x);
-        }
-        else if(isalnum(*eof))
-            printf("%c ",*eof);
-        else
-        {
-            while(priority(stack[top]) >= priority(*eof))
-                printf("%c ",pop1());
-            push1(*eof);
-        }
-        eof++;
-    }
-    while(top != -1)
-    {
-        printf("%c",pop1());
-    }
-    char infixConverted = pop1();
-    return infixConverted;
-}
-int main(int argc, char ** argv)
+    int i, k;
 
+    // Create a stack of capacity equal to expression size
+    struct Stack* stack = createStack(strlen(exp));
+    if(!stack) // See if stack was created successfully
+        return -1 ;
+
+    for (i = 0, k = -1; exp[i]; ++i)
+    {
+        // If the scanned character is an operand, add it to output.
+        if (isOperand(exp[i]))
+            exp[++k] = exp[i];
+
+        // If the scanned character is an ‘(‘, push it to the stack.
+        else if (exp[i] == '(')
+            push(stack, exp[i]);
+
+        // If the scanned character is an ‘)’, pop and output from the stack
+        // until an ‘(‘ is encountered.
+        else if (exp[i] == ')')
+        {
+            while (!isEmpty(stack) && peek(stack) != '(')
+                exp[++k] = pop(stack);
+            if (!isEmpty(stack) && peek(stack) != '(')
+                return -1; // invalid expression
+            else
+                pop(stack);
+        }
+        else // an operator is encountered
+        {
+            while (!isEmpty(stack) && Prec(exp[i]) <= Prec(peek(stack)))
+                exp[++k] = pop(stack);
+            push(stack, exp[i]);
+        }
+
+    }
+
+    // pop all the operators from the stack
+    while (!isEmpty(stack))
+        exp[++k] = pop(stack );
+
+    exp[++k] = '\0';
+    printf( "%s", exp );
+}
+
+// Driver program to test above functions
+int main()
 {
-    int fullResult = 0;
-
-    //postFixCalculation(infixToPostfix());
-
-
-
-    FILE *filename = fopen("file.txt", "r");
-
-    if ( argc == 1 ) {
-        printf("Error: No input filename provided\n");
-        printf("Usage: %s file.txt\n", argv[0]);
-        exit(1);
-    }
-    else if ( argc > 2 ) {
-        printf("Error: Too many command line parameters\n");
-        printf("Usage: %s file.txt\n", argv[0]);
-        exit(1);
-    }
-    else {
-        filename = argv[1];
-    }
-    char inputFile[128] = {' '};
-    char inArray[128] = {' '};
-    char changedInput[128] = {' '};
-    FILE *pToFile = fopen("filename", " r ");
-    // create the output file
-    FILE *myFile = fopen("file.results.txt", "w");
-    while(fgets(inputFile, 128, pToFile)) {
-        for (int i = 0; i < 128; i++) {
-            if(inputFile[i] != '\n')
-                fprintf(myFile, "%c", inputFile[i]);
-        }
-        if( inputFile[0] == 'i') {
-            infixToPostfix(inArray);
-              fullResult = infixToPostfix();
-            } else {
-            for (int i = 8; i <128 ; i++) {
-                changedInput[i - 8] = inputFile[i];
-
-            }
-            fullResult = postFixCalculation(changedInput);
-        }
-        fprintf(myFile, "\n %g  ", fullResult);
-
-    }
-    fclose(pToFile);
-    fclose(myFile);
-}
+    char exp[] = "a+b*(c^d-e)^(f+g*h)-i";
+    infixToPostfix(exp);
+    return 0;
+} 

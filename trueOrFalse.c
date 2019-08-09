@@ -6,16 +6,17 @@
 
 struct node {
   char data;
-  struct node * next;
+  struct node *next; // pointer to the next data value
 } * top = NULL;
 
-  void push (char c) {
-    struct node * newNode;
+  void push (char c){
+    struct node *next;
+    struct node *newNode;
     newNode = malloc(sizeof(struct node));
     newNode->data = c;
     if(top == NULL){
       next == NULL;
-    }else{
+    }else{ 
       next = top;
       top = newNode;
     }
@@ -23,64 +24,77 @@ struct node {
 
   char pop(){
     char poppedChar = 0;
-    struct node * tmp = top;
+    struct node *tmp = top;
     top = tmp->next;
     poppedChar = tmp->data;
     free(tmp);
     return poppedChar;
   }
 
-  int main(int argc, char const *argv[]) {
-    int i;
-    char c;
+    int main(int argc, char const *argv[]) {
+      int i;
+      char c;
+      char result;
+      int ignoreNextChar;
+      char a,b;
 
-    if(argc < 1 ){
-      printf("not enough parameters");
-    } else {
-      int ignorenextChar  = 0;
-    }
-      for (i = 0; i < sizeof(argv[]); i++) {
+
+      if(argc < 1){
+        printf("There has not been enough parameters passed in\n");
+      }else{
+        ignoreNextChar = 0;
+      }
+
+      for (i = 0; i < sizeof(argv); i++) {
         c = argv[i];
         if(c == "T" || c == "F"){
           push(c);
         } else if (c == "&&" || c == "||" || c == "!"){
-          char result;
-          int a = pop();
-          int b = pop();
-          if (a == "T"){
+          a = pop(); // ask about this
+          b = pop();
+
+          if(a == "T"){
             a = 1;
-          }else {
+          }else{
             a = 0;
           }
+
           if(b == "T"){
             b = 1;
           }else{
             b = 0;
           }
         }
-        if(c == "&"){
-          result = a & b; push(result);
-        } else if (c == "|"){
-          result = a | b; push(result);
-        }
-        ignorenextChar = 1;
-        else if(c == "!"){
-          int a = pop();
-        }
-        if(a == "T"){
-          a = 0;
 
+        if(c == "&"){
+          result = a & b;
+          push(result);
+        } else if (c == "!"){
+           a = pop();
+        }
+        else{
+          if (c == "|"){
+            result = a | b;
+            push(result);
+          }
+          ignoreNextChar = 1;
+        }
+
+        if (a == "T"){
+          a = 0;
         }else{
           a = 1;
           push(a);
         }
+
       }
-    int result = pop();
-    if(result == 1){
-      result = "T";
-    }else{
-      result = "F";
+      char result1 = pop();
+      if(result1 == 1){
+        result1 = "T";
+      }else{
+        result1 = "F";
+      }
+      printf("The result is %s", result1);
+
+      return 0;
     }
-    printf("The result is  %c", result);
-    return 0;
-  }
