@@ -6,6 +6,13 @@
     struct node * next;
   } node;
 
+    node * creatNewString(){
+      struct * stringList;
+      stringList->data = NULL;
+      stringList-> next = NULL;
+      return stringList;
+    }
+
   /* function prototpyes */
   node * createLinkedList();
   void displaylist(node * head);
@@ -21,27 +28,33 @@
     return 0;
   }
 
-int stringCompare(char firstString[], char secondString[]){
-    int i = 0;
-    while(firstString[i] == secondString[i] && firstString[i] == '\0')
-	  	i++;
+int stringCompare(node * first, node * second){
+  int firstMyString = 0;
+  int csecondMyString = 0;
+  while(first->next != NULL){
+    first = first->next;
+    firstMyString++;
 
-  	if(firstString[i] < secondString[i])
-   	{
-   		printf("\n str1 is Less than str2");
-	}
-	else if(firstString[i] > secondString[i])
-   	{
-   		printf("\n str2 is Less than str1");
-	}
-	else
-   	{
-   		printf("\n str1 is Equal to str2");
-	}
+  }
+  while(second->next != NULL){
+    second = second->next;
+    secondMyString++;
 
-  	return 0;
+  }
+  //compare the two
+  If(firstMyString > secondMyString){
+    return -1;
+  }
+  else if (firstMyString < secondMyString){
+    return 1;
+  }
+  else {
+  return 0;
+}
 
 }
+
+
 
   node * createLinkedList(){
     char theArray[] = "dillon";
@@ -53,8 +66,6 @@ int stringCompare(char firstString[], char secondString[]){
     for (i = 0; i < sizeof(theArray); i++) {
       temp = (node*)malloc(sizeof(node));
       temp->data = theArray[i];
-      //printf("Please enter node number %d:",i + 1);
-      //scanf("%s",&(temp->data));
       temp->next = NULL;
 
       if(head == NULL){
@@ -66,6 +77,7 @@ int stringCompare(char firstString[], char secondString[]){
         while(p->next != NULL){
           p = p->next;
         p->next = temp;
+
         }
       }
 

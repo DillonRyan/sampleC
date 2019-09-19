@@ -10,13 +10,11 @@ struct node {
 } * top = NULL;
 
   void push (char c){
-    struct node *next;
-    struct node *newNode;
-    newNode = malloc(sizeof(struct node));
+    struct node *newNode = malloc(sizeof(struct node));
     newNode->data = c;
-    if(top == NULL){
+    if(top == NULL){ // if stack is empty
       next == NULL;
-    }else{ 
+    }else{
       next = top;
       top = newNode;
     }

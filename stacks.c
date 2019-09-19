@@ -42,12 +42,6 @@ int pop(struct StackNode** root)
     return popped;
 }
 
-int peek(struct StackNode* root)
-{
-    if (isEmpty(root))
-        return INT_MIN;
-    return root->data;
-}
 
 int main()
 {
